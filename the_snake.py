@@ -1,4 +1,5 @@
 from random import choice, randint
+
 import pygame
 
 # Константы для размеров поля и сетки:
@@ -58,7 +59,7 @@ class GameObject:
 class Apple(GameObject):
     """Класс для яблок, которые змейка может съесть."""
 
-    def __init__(self, snake_positions=[0, 0]):
+    def __init__(self, snake_positions=(0, 0)):
         super().__init__()
         self.snake_positions = snake_positions
         self.body_color = APPLE_COLOR  # Устанавливаем цвет яблока
@@ -94,7 +95,7 @@ class Snake(GameObject):
         super().__init__()
         self.body_color = SNAKE_COLOR  # Устанавливаем цвет змейки
         # Изначальная позиция головы змейки
-        self.positions = [[SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2]]
+        self.positions = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
         # Начальное направление движения
         self.direction = choice((RIGHT, LEFT, UP, DOWN))
         self.next_direction = None  # Следующее направление
@@ -150,7 +151,7 @@ class Snake(GameObject):
         """Сбрасывает изменения позиции змейки в случае столкновения собой."""
         if self.get_head_position() in self.positions[1:]:
             # Устанавливаем начальную позицию
-            self.positions = [[SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2]]
+            self.positions = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
             # Случайное направление
             self.direction = choice((RIGHT, LEFT, UP, DOWN))
             self.length = 1  # Сбрасываем длину
