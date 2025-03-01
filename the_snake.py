@@ -73,16 +73,13 @@ class GameObject:
         Перераспределен в дочерних классах
         """
         raise NotImplementedError(
-            "Этот метод должен быть переопределён в дочернем классе.")
+            'Этот метод должен быть переопределён в дочернем классе.')
 
 
 class Apple(GameObject):
     """Класс для яблок, которые змейка может съесть."""
 
-    def __init__(self, snake_positions=[(
-            SCREEN_WIDTH // 2,
-            SCREEN_HEIGHT // 2)]
-    ):
+    def __init__(self, snake_positions=[(None, None)]):
         super().__init__()
         """вызоваем конструктора базового класса в конструкторе дочернего"""
         self.body_color = APPLE_COLOR  # Устанавливаем цвет яблока
@@ -173,10 +170,7 @@ class Snake(GameObject):
         True, если голова змейка укусила себя.
         False, если не укусила.
         """
-        if self.get_head_position() in self.positions[1:]:
-            return True
-        else:
-            return False
+        return self.get_head_position() in self.positions[1:]
 
 
 def handle_keys(snake):
