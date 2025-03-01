@@ -79,10 +79,12 @@ class GameObject:
 class Apple(GameObject):
     """Класс для яблок, которые змейка может съесть."""
 
-    def __init__(self, snake_positions=[(None, None)]):
+    def __init__(self, snake_positions=None):
         super().__init__()
         """вызоваем конструктора базового класса в конструкторе дочернего"""
         self.body_color = APPLE_COLOR  # Устанавливаем цвет яблока
+        if snake_positions is None:
+            snake_positions = []
         self.randomize_position(snake_positions)  # Генерируем позицию яблока
 
     def randomize_position(self, snake_positions):
