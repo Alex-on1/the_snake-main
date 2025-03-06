@@ -62,15 +62,25 @@ class GameObject:
     """Базовый класс для игровых объектов."""
 
     def __init__(self):
-        """Позиция объекта по центру."""
+        """
+        Устанавливает все необходимые атрибуты объекта GameObject.
+
+        Атрибуты
+        ---------
+        position : tuple[int]
+                    позиция объекта по центру
+        body_color : None
+                    цвет объекта
+
+        """
         self.position = (SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)
-        """Цвет тела объекта, будет определен в дочерних классах."""
         self.body_color = None
 
     def draw(self):
         """
         Метод отрисовки объекта.
-        Перераспределен в дочерних классах
+
+        Указывает на то, что метод должен быть переопределен в других классах.
         """
         raise NotImplementedError(
             'Этот метод должен быть переопределён в дочернем классе.')
@@ -80,8 +90,30 @@ class Apple(GameObject):
     """Класс для яблок, которые змейка может съесть."""
 
     def __init__(self, snake_positions=None):
+        """
+        Устанавливает все необходимые атрибуты объекта Apple.
+
+        Атрибуты
+        ---------
+        body_color : tuple
+                    цвет объекта
+
+        Параметры
+        ----------
+        snake_positions : list, optional
+                Позиции змейки, которые не должны совпадать с позицией яблока.
+
+        Примечания
+        ---------
+        Вызовает конструктора базового класса в конструкторе дочернего,
+        передает в метод randomize_position аргумент snake_positions.
+
+        Следующее примечание
+        ---------
+        Если snake_positions равен None,
+        то ему присваивается значение пустого списка для исключения ошибки.
+        """
         super().__init__()
-        """вызоваем конструктора базового класса в конструкторе дочернего"""
         self.body_color = APPLE_COLOR  # Устанавливаем цвет яблока
         if snake_positions is None:
             snake_positions = []
@@ -90,7 +122,12 @@ class Apple(GameObject):
     def randomize_position(self, snake_positions):
         """
         Случайно устанавливает позицию яблока.
-        Следит за тем, чтообы яблоко не генерировалось в теле змеи.
+
+        ---------
+        Принимает позицию змейки snake_positions, запускает бесконечный цикл.
+        Передает position(позиция яблока) новую позицию.
+        Если новая позиция яблока не совпадает с телом змейки,
+        то цикл завершается
         """
         while True:
             self.position = (
@@ -114,8 +151,27 @@ class Snake(GameObject):
     """Класс для змейки."""
 
     def __init__(self):
+        """
+        Устанавливает все необходимые атрибуты объекта Snake.
+
+        Атрибуты
+        ---------
+        body_color : tuple[int]
+                    цвет объекта
+        positions : list[tuple]
+                    позиции змейки
+        direction : tuple[int]
+                    направление змейки
+        next_direction : None
+                    следующее направление
+        length : int
+                    длинна змейки
+
+        Примечания
+        ---------
+        Вызовает конструктора базового класса в конструкторе дочернего.
+        """
         super().__init__()
-        """Вызываем конструктор базового класса в конструкторе дочернего"""
         self.body_color = SNAKE_COLOR  # Устанавливаем цвет змейки
         # Изначальная позиция головы змейки
         self.positions = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
@@ -133,15 +189,16 @@ class Snake(GameObject):
 
     def move(self):
         """Двигает змею в текущем направлении."""
+        head_x, head_y = self.get_head_position()  # распаковываем кортеж
         new_position = (
-            (self.get_head_position()[0] + GRID_SIZE
+            (head_x + GRID_SIZE
              * self.direction[0]) % SCREEN_WIDTH,
-            (self.get_head_position()[1] + GRID_SIZE
+            (head_y + GRID_SIZE
              * self.direction[1]) % SCREEN_HEIGHT
         )
-    # Вставляем новую позицию головы
+        # Вставляем новую позицию головы
         self.positions.insert(0, new_position)
-    # Если длина змейки превышает заданную
+        # Если длина змейки превышает заданную
         if len(self.positions) > self.length:
             self.positions.pop(-1)  # Удаляем последний сегмент змейки
 
@@ -168,7 +225,9 @@ class Snake(GameObject):
 
     def self_collection(self):
         """
-        Метод возвращающий True или False.
+        Метод, который следит за тем укусила ли себя змея.
+
+        ----------
         True, если голова змейка укусила себя.
         False, если не укусила.
         """
@@ -201,18 +260,20 @@ def main():
     while True:
         clock.tick(SPEED)  # Добавление вызова tick для управления скоростью
         screen.fill(BOARD_BACKGROUND_COLOR)  # Отрисовка фона
-        apple.draw()  # Отрисовка яблока
         handle_keys(snake)  # Обработка нажатий клавиш
-        snake.update_direction()  # проверяет укусила ли змейка себя
+        snake.update_direction()  # Обновление направления змейки
         snake.move()  # Движение змейки
+        # Проверка на укус
         if snake.self_collection():
-            screen.fill(BOARD_BACKGROUND_COLOR)  # заливка фона
             snake.reset()  # Сброс состояния змейки
             apple.randomize_position(snake.positions)  # новая позиция яблока
-        if snake.get_head_position() == apple.position:  # Проверка на поедание
+        # Проверка на поедание яблока
+        elif snake.get_head_position() == apple.position:
             snake.length += 1  # Увеличиваем длину змейки
             # Генерируем новую позицию яблока
             apple.randomize_position(snake.positions)
+        # Отрисовка объектов
+        apple.draw()  # Отрисовка яблока
         snake.draw()  # Отрисовка змейки
 
         pygame.display.update()  # Обновление дисплея
